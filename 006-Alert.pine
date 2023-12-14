@@ -1,0 +1,20 @@
+//@version=5
+// This script generates alerts based on the condition that the opening price is less than the closing price
+
+// The "indicator" function sets the title and display settings of the script
+indicator("Alert", overlay = true) // Note: Alerts only work when the alert is activated manually
+
+// Define the condition for the alert
+price_rise_condition = open < close
+
+// Create an alert condition with a custom message
+alertcondition(price_rise_condition, title = "Price Rise Alert", message = "The price is going up!") // This creates an inline alert condition with a custom message
+
+// If the condition is met, trigger an alert with a custom message
+if(price_rise_condition)
+    alert("The price is going up!", alert.freq_once_per_bar) // This triggers an alert with a custom message
+
+// Suggested modifications:
+// 1. Try changing the condition for the alert and see how it affects the alerts
+// 2. Try using different messages for the alerts
+// 3. Try adding more conditions for different alerts

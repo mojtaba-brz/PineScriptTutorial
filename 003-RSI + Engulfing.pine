@@ -1,0 +1,29 @@
+//@version=5
+// This script uses the RSI (Relative Strength Index) and Engulfing candlestick pattern to generate buy and sell signals
+
+// The "indicator" function sets the title and display settings of the script
+indicator("RSI + Engulfing", overlay = true)
+
+// Inputs allow users to change settings from the settings panel of the script
+rsi_length = input(14, "Choose RSI Length") // User can choose the length for the RSI calculation
+rsi_source = input(close, "Choose RSI Source") // User can choose the source (close, open, high, low) for the RSI calculation
+
+// Define the conditions for bullish and bearish engulfing candles
+bullish_engulfing_candle = close[1] < open[1] and close > high[1]
+bearish_engulfing_candle = close[1] > open[1] and close < low[1]
+
+// Calculate the RSI line
+rsi_line = ta.rsi(rsi_source, rsi_length)
+
+// Define the conditions for buy and sell signals
+buy_signal = bullish_engulfing_candle and (rsi_line < 30 or rsi_line[1] < 30)
+sell_signal = bearish_engulfing_candle and (rsi_line > 70 or rsi_line[1] > 70)
+
+// Plot the buy and sell signals on the chart
+plotshape(buy_signal, "Buy Signal", shape.triangleup, location.belowbar, color.green,  size = size.small)
+plotshape(sell_signal, "Sell Signal", shape.triangledown, location.abovebar, color.red, size = size.small)
+
+// Suggested modifications:
+// 1. Try changing the RSI length and see how it affects the signals
+// 2. Try using a different source for the RSI calculation
+// 3. Try adding more indicators, like MACD or Stochastic, and see how they correlate with the signals

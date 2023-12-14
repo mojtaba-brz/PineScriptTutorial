@@ -1,0 +1,29 @@
+//@version=5
+// This script compares the performance of two symbols over a specified timeframe
+
+// The "indicator" function sets the title and display settings of the script
+indicator("MultiSymbol MultiTimeFrame Indicator", overlay = false)
+
+// Inputs allow users to change settings from the settings panel of the script
+opponent_symbol = input.symbol('CAPITALCOM:GOLD', 'Opponent symbol') // User can choose the opponent symbol
+desired_timeframe = input.timeframe('1W', 'Desired TimeFrame') // User can choose the timeframe
+
+// Calculate the percentage change in price for the current symbol over the desired timeframe
+percentage_change_current_symbol = request.security('', desired_timeframe, (close - open)/open * 100)
+
+// Calculate the percentage change in price for the opponent symbol over the desired timeframe
+percentage_change_opponent_symbol = request.security(opponent_symbol, desired_timeframe, (close - open)/open * 100)
+
+// Plot the percentage change in price for the current symbol
+plot(percentage_change_current_symbol)
+
+// Plot the percentage change in price for the opponent symbol in red
+plot(percentage_change_opponent_symbol, color = color.red)
+
+// Draw a horizontal line at 0
+hline(0)
+
+// Suggested modifications:
+// 1. Try comparing different symbols and see how their performance differs
+// 2. Try using a different timeframe for the comparison
+// 3. Try adding more indicators, like RSI or MACD, and see how they correlate with the performance of the symbols

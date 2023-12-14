@@ -1,0 +1,11 @@
+//@version=5
+
+// @description This library, "ExLibrary", contains a set of functions for performing various calculations
+library("ExLibrary")
+
+// @function This function, "fun", takes a float as input and returns the input incremented by 1
+// @param x This is the input to the function, which should be a float
+// @returns This function returns the input incremented by 1
+export fun(float x) =>
+	// The function body simply increments the input by 1 and returns the result
+	x + 1

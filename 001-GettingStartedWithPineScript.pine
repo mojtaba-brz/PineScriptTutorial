@@ -1,0 +1,21 @@
+//@version=5
+
+// This script shows how to plot two simple moving averages and generate buy/sell signals based on their crossovers.
+// The fast moving average is calculated over 10 periods and the slow moving average is calculated over 20 periods.
+
+//             name           plot on chart
+indicator(title = "MA Cross", overlay = true)
+
+ma_fast = ta.sma(close, 10) // fast moving average
+ma_slow = ta.sma(close, 20) // slow moving average
+
+plot(ma_fast, title = "Fast MA", color = color.blue, linewidth = 2)
+plot(ma_slow, title = "Slow MA", color = color.red , linewidth = 2)
+
+// Buy signals are generated when the fast moving average crosses above the slow moving average.
+buy_signal = ta.crossover(ma_fast, ma_slow)
+// Sell signals are generated when the fast moving average crosses below the slow moving average.
+sell_signal = ta.crossover(ma_slow, ma_fast)
+
+plotshape(buy_signal, location = location.belowbar, color = color.green, size = size.small, style = shape.triangleup)
+plotshape(sell_signal, location = location.abovebar, color = color.red, size = size.small, style = shape.triangledown)

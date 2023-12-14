@@ -1,0 +1,72 @@
+//@version=5
+// This script creates lines, a box, and a table on the chart based on various conditions
+
+// The "indicator" function sets the title and display settings of the script
+indicator("OnChartObjects", overlay = true)
+
+// Inputs allow users to change settings from the settings panel of the script
+far_scope = input.int(200, "First Point Scope", minval = 11, maxval=200)
+near_scope = input.int(20, "Second Point Scope", minval = 10, maxval=100)
+
+// Check if the far scope is less than or equal to the near scope and throw an error if it is
+if far_scope <= near_scope
+    runtime.error("First Point Scope must be greater than Second Point Scope")
+
+// Define a function to get the lowest price in a given range
+get_lowest(series, start_index, end_index) =>
+    lowest_price = chart.point.new(0, 0, 100000000000000000)
+    for i = start_index to end_index by 1
+        if lowest_price.price > series[i]
+            lowest_price := chart.point.from_index(bar_index - i, series[i])
+    lowest_price
+
+// Define a function to get the highest price in a given range
+get_highest(series, start_index, end_index) =>
+    highest_price = chart.point.new(0, 0, 0)
+    for i = start_index to end_index by 1
+        if highest_price.price < series[i]
+            highest_price := chart.point.from_index(bar_index - i, series[i])
+    highest_price
+
+// Initialize a line for the bottom of the range
+var bottom_line = line.new(1,0,1,0, width = 3, color = color.yellow)
+lowest_point_far = get_lowest(low, near_scope+1, far_scope)
+lowest_point_near = get_lowest(low, 0, near_scope)
+
+// Initialize a line for the top of the range
+var top_line = line.new(1,0,1,0, width = 3, color = color.rgb(0, 102, 255))
+highest_point_far = get_highest(high, near_scope+1, far_scope)
+highest_point_near = get_highest(high, 0, near_scope)
+
+// Initialize a box for the range
+var range_box = box.new(0,0,0,0, color.aqua, 1, bgcolor = na)
+lowest_point_range = get_lowest(low, 0, far_scope)
+highest_point_range = get_highest(high, 0, far_scope)
+
+// Initialize a table for displaying information
+var table_info = table.new(position.top_right, 3, 4, frame_color = color.white, frame_width = 2, border_width = 1, border_color = color.white)
+
+// If it's the last bar, set the points for the lines and box, and fill in the table
+if barstate.islast
+    bottom_line.set_extend(extend.right)
+    bottom_line.set_first_point(lowest_point_far)
+    bottom_line.set_second_point(lowest_point_near)
+
+    top_line.set_extend(extend.right)
+    top_line.set_first_point(highest_point_far)
+    top_line.set_second_point(highest_point_near)
+
+    range_box.set_top(highest_point_range.price)
+    range_box.set_bottom(lowest_point_range.price)
+    range_box.set_right(bar_index + near_scope)
+    range_box.set_left(bar_index - far_scope - near_scope)
+
+    table_info.cell(0, 0, "Title", text_size = size.normal, text_color = color.silver)
+    table_info.cell(1, 0, "Current Price", text_size = size.normal, text_color = color.silver)
+    table_info.cell(2, 0, "Status", text_size = size.normal, text_color = color.silver)
+    table_info.cell(0, 1, "UpBreak", text_color = color.silver)
+    table_info.cell(1, 1, str.tostring(close), text_color = color.silver)
+    table_info.cell(2, 1, close >= top_line.get_price(bar_index)? "UpBreak":"No UpBreak", text_color = color.silver)
+    table_info.cell(0, 2, "DownBreak", text_color = color.silver)
+    table_info.cell(1, 2, str.tostring(close), text_color = color.silver)
+    table_info.cell(2, 2, close <= bottom_line.get_price(bar_index)? "DownBreak":"No DownBreak", text_color = color.silver)

@@ -1,0 +1,41 @@
+//@version=5
+// This strategy uses the RSI (Relative Strength Index) and Engulfing candlestick pattern to generate buy and sell signals
+
+// The "strategy" function sets the title, display settings, and initial capital of the strategy
+strategy("My strategy", overlay=true, initial_capital = 100000)
+
+// Inputs allow users to change settings from the settings panel of the script
+rsi_length = input(14, "Choose RSI Length") // User can choose the length for the RSI calculation
+rsi_source = input(close, "Choose RSI Source") // User can choose the source (close, open, high, low) for the RSI calculation
+
+// Define the conditions for bullish and bearish engulfing candles
+bullish_engulfing_candle = close[1] < open[1] and close > high[1] and close > high[2]
+bearish_engulfing_candle = close[1] > open[1] and close < low[1] and close < low[2]
+
+// Calculate the RSI line
+rsi_line = ta.rsi(rsi_source, rsi_length)
+
+// Define the conditions for buy and sell signals
+buy_signal = bullish_engulfing_candle and (rsi_line < 30 or rsi_line[1] < 30)
+sell_signal = bearish_engulfing_candle and (rsi_line > 70 or rsi_line[1] > 70)
+
+// Calculate the highest and lowest prices over the past 20 bars
+highest_20 = ta.highest(20)
+lowest_20 = ta.lowest(20)
+
+// If the buy signal condition is met, enter a long position
+if buy_signal
+    strategy.entry("Buy", strategy.long, qty = 10000)
+    // Exit the position when the price reaches the highest price of the past 20 bars or falls 0.5% below the lowest price of the past 20 bars
+    strategy.exit("Buy", limit = highest_20, stop = lowest_20*0.995)
+
+// If the sell signal condition is met, enter a short position
+if sell_signal
+    strategy.entry("Sell", strategy.short, qty = 10000)
+    // Exit the position when the price reaches the lowest price of the past 20 bars or rises 0.5% above the highest price of the past 20 bars
+    strategy.exit("Sell", limit = lowest_20, stop = highest_20*1.005)
+
+// Suggested modifications:
+// 1. Try changing the conditions for the buy and sell signals and see how it affects the strategy
+// 2. Try using different lengths for the RSI calculation
+// 3. Try adding more indicators, like MACD or Stochastic, and see how they correlate with the signals

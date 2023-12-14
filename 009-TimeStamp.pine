@@ -1,0 +1,20 @@
+//@version=5
+// This script changes the background color based on the current time
+
+// The "indicator" function sets the title and display settings of the script
+indicator("TimeStamp", overlay = true)
+
+// Define the start and end times for the period of interest
+start_time = timestamp(2022, 1, 1) // Start time is set to January 1, 2022
+end_time = timestamp(2023, 1, 1) // End time is set to January 1, 2023
+
+// Check if the current time is within the period of interest
+time_within_period = time < end_time and time > start_time
+
+// Change the background color to dark blue if the current time is within the period of interest
+bgcolor(time_within_period? color.rgb(0,0,40):na)
+
+// Suggested modifications:
+// 1. Try changing the start and end times and see how it affects the background color
+// 2. Try using a different color for the background
+// 3. Try adding more conditions for different background colors

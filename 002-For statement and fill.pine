@@ -1,0 +1,34 @@
+//@version=5
+// This script uses a for loop to calculate a moving average and plots it along with upper and lower limit lines
+
+// The "indicator" function sets the title and display settings of the script
+indicator("Using for statement", overlay = true)
+
+// Inputs allow users to change settings from the settings panel of the script
+price_type = input(close, "Choose price type") // User can choose the price type (close, open, high, low)
+length = input(10, "Choose length") // User can choose the length for the moving average
+
+// Initialize a variable to hold the sum of the prices
+sum_of_prices = 0.
+
+// A for loop that adds up the chosen price type over the chosen length
+for i=0 to length-1
+    sum_of_prices := sum_of_prices + price_type[i]
+
+// Calculate the moving average by dividing the sum of prices by the length
+moving_average = sum_of_prices/length
+
+// Plot the moving average
+plot(moving_average)
+
+// Plot the highest high and lowest low over the past 20 bars as upper and lower limit lines
+upper_limit_line = plot(ta.highest(high, 20), color = color.red, linewidth = 4)
+lower_limit_line = plot(ta.lowest(low, 20), color = color.green, linewidth = 4)
+
+// Fill the area between the upper and lower limit lines with different colors depending on whether the close price is above or below the moving average
+fill(upper_limit_line, lower_limit_line, color = close > moving_average? color.rgb(133, 175, 134) : color.rgb(184, 126, 194))
+
+// Suggested modifications:
+// 1. Try changing the length and see how it affects the moving average
+// 2. Try using a different price type for the moving average calculation
+// 3. Try adding more indicators, like volume or RSI, and see how they correlate with the moving average
