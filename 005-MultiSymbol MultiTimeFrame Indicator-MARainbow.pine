@@ -1,0 +1,49 @@
+//@version=5
+// This script is for the MARAinbow indicator, which is displayed on the chart overlay
+indicator("MARAinbow", overlay = true)
+
+// Define the lengths for each moving average (MA). These can be adjusted in the settings panel.
+ma_5min_len = input.int(80, "5 min MA len") // Length for the 5-minute MA
+ma_15min_len = input.int(50, "15 min MA len") // Length for the 15-minute MA
+ma_30min_len = input.int(30, "30 min MA len") // Length for the 30-minute MA
+ma_1hour_len = input.int(20, "1 hour MA len") // Length for the 1-hour MA
+ma_4hour_len = input.int(8, "4 hour MA len") // Length for the 4-hour MA
+ma_12hour_len = input.int(10, "12 hour MA len") // Length for the 12-hour MA
+ma_1day_len = input.int(10, "1 day MA len") // Length for the 1-day MA
+
+// Calculate the MAs for each time frame using the simple moving average (SMA) method
+// Note: 'request.security' function is used to get data from different time frames
+ma_5min = request.security(syminfo.tickerid, "5", ta.sma(close, ma_5min_len)) // 5-minute MA
+ma_15min = request.security(syminfo.tickerid, "15", ta.sma(close, ma_15min_len)) // 15-minute MA
+ma_30min = request.security(syminfo.tickerid, "30", ta.sma(close, ma_30min_len)) // 30-minute MA
+ma_1hour = request.security(syminfo.tickerid, "60", ta.sma(close, ma_1hour_len)) // 1-hour MA
+ma_4hour = request.security(syminfo.tickerid, "240", ta.sma(close, ma_4hour_len)) // 4-hour MA
+ma_12hour = request.security(syminfo.tickerid, "720", ta.sma(close, ma_12hour_len)) // 12-hour MA
+ma_1day = request.security(syminfo.tickerid, "1D", ta.sma(close, ma_1day_len)) // 1-day MA
+
+// Plot each MA with a unique color and line width
+// Note: 'color.new' function is used to set the transparency of the color (the second argument)
+plot(ma_5min, title = "MA 5min", color=color.new(#ff0000, 20), linewidth = 2) // Red line for 5-minute MA
+plot(ma_15min, title = "MA 15min", color=color.new(#fc7a00, 20), linewidth = 2) // Orange line for 15-minute MA
+plot(ma_30min, title = "MA 30min", color=color.new(#eeff00, 20), linewidth = 2) // Yellow line for 30-minute MA
+plot(ma_1hour, title = "MA 1hour", color=color.new(#15ff00, 20), linewidth = 2) // Green line for 1-hour MA
+plot(ma_4hour, title = "MA 4hour", color=color.new(#00fff2, 20), linewidth = 3) // Light blue line for 4-hour MA
+plot(ma_12hour, title = "MA 12hour", color=color.new(#0044ff, 20), linewidth = 3) // Blue line for 12-hour MA
+plot(ma_1day, title = "MA 1day", color=color.new(#f700ff, 20), linewidth = 3) // Purple line for 1-day MA
+
+// Plot each MA again with no transparency for the fill function
+ma_5min_line = plot(ma_5min, title = "MA 5min", color=color.new(#ff0000, 0), linewidth = 2)
+ma_15min_line = plot(ma_15min, title = "MA 15min", color=color.new(#fc7a00, 0), linewidth = 2)
+ma_30min_line = plot(ma_30min, title = "MA 30min", color=color.new(#eeff00, 0), linewidth = 2)
+ma_1hour_line = plot(ma_1hour, title = "MA 1hour", color=color.new(#15ff00, 0), linewidth = 2)
+ma_4hour_line = plot(ma_4hour, title = "MA 4hour", color=color.new(#00fff2, 0), linewidth = 2)
+ma_12hour_line = plot(ma_12hour, title = "MA 12hour", color=color.new(#0044ff, 0), linewidth = 2)
+ma_1day_line = plot(ma_1day, title = "MA 1day", color=color.new(#f700ff, 0), linewidth = 2)
+
+// Fill the area between each MA line with a unique color
+fill(ma_5min_line, ma_15min_line, color = color.new(#ff3300, 80)) // Fill between 5-minute and 15-minute MAs
+fill(ma_15min_line, ma_30min_line, color = color.new(#ff9100, 80)) // Fill between 15-minute and 30-minute MAs
+fill(ma_30min_line, ma_1hour_line, color = color.new(#eeff00, 80)) // Fill between 30-minute and 1-hour MAs
+fill(ma_1hour_line, ma_4hour_line, color = color.new(#33ff00, 80)) // Fill between 1-hour and 4-hour MAs
+fill(ma_4hour_line, ma_12hour_line, color = color.new(#2600ff, 80)) // Fill between 4-hour and 12-hour MAs
+fill(ma_12hour_line, ma_1day_line, color = color.new(#d400ff, 80)) // Fill between 12-hour and 1-day MAs

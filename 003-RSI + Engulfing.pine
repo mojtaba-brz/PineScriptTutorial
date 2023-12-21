@@ -5,8 +5,8 @@
 indicator("RSI + Engulfing", overlay = true)
 
 // Inputs allow users to change settings from the settings panel of the script
-rsi_length = input(14, "Choose RSI Length") // User can choose the length for the RSI calculation
-rsi_source = input(close, "Choose RSI Source") // User can choose the source (close, open, high, low) for the RSI calculation
+rsi_length = input(14, "RSI Length") // User can choose the length for the RSI calculation
+rsi_source = input(close, "RSI Source") // User can choose the source (close, open, high, low) for the RSI calculation
 
 // Define the conditions for bullish and bearish engulfing candles
 bullish_engulfing_candle = close[1] < open[1] and close > high[1]

@@ -5,8 +5,8 @@
 indicator("Using for statement", overlay = true)
 
 // Inputs allow users to change settings from the settings panel of the script
-price_type = input(close, "Choose price type") // User can choose the price type (close, open, high, low)
-length = input(10, "Choose length") // User can choose the length for the moving average
+price_type = input(close, "Price type") // User can choose the price type (close, open, high, low)
+length = input(10, "Length") // User can choose the length for the moving average
 
 // Initialize a variable to hold the sum of the prices
 sum_of_prices = 0.

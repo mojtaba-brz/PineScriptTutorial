@@ -3,6 +3,7 @@
 // This script shows how to plot two simple moving averages and generate buy/sell signals based on their crossovers.
 // The fast moving average is calculated over 10 periods and the slow moving average is calculated over 20 periods.
 
+// The "indicator" function sets the title and display settings of the script
 //             name           plot on chart
 indicator(title = "MA Cross", overlay = true)
 

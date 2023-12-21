@@ -5,23 +5,35 @@
 indicator("Background + Label", overlay = true)
 
 // Define the conditions for changing the background color to silver red
-silver_red_condition = low[2] < low[1] and low[2] < low and low[2] < low[3] and low[2] < low[4]
+silverRedCondition = low[2] < low[1] and low[2] < low and low[2] < low[3] and low[2] < low[4] and low[2]<=ta.lowest(low, 50) // Condition for silver red color
 
 // Define the condition for a high price
-high_condition = high[2] > high[1] and high[2] > high and high[2] > high[3] and high[2] > high[4]
+highPriceCondition = high[2] > high[1] and high[2] > high and high[2] > high[3] and high[2] > high[4] and high[2]<=ta.highest(high, 50) // Condition for high price
 
 // Change the background color to silver red if the condition is met
-bgcolor(silver_red_condition? color.rgb(194, 140, 140) : na, offset = -2)
+bgcolor(silverRedCondition? color.rgb(194, 140, 140) : na, offset = -2)
 
 // Initialize a variable for the silver blue condition
-silver_blue_condition = false
+silverBlueCondition = false
 
 // If the high condition is met and the high price of 2 bars ago is greater than the high prices of 5 and 6 bars ago, set the silver blue condition to true
-if high_condition and high[2]>high[5] and high[2]>high[6]
-    silver_blue_condition := true
+if highPriceCondition and high[2]>high[5] and high[2]>high[6]
+    silverBlueCondition := true
 
 // Change the background color to silver blue if the condition is met
-bgcolor(silver_blue_condition? color.rgb(142, 154, 190):na, offset = -2)
+bgcolor(silverBlueCondition? color.rgb(142, 154, 190):na, offset = -2)
+
+// Initialize labels for the highest and lowest points
+var highestLabel = label.new(0, high*1.0005, color = color.new(color.blue, 0), text = "Reversal point")
+var lowestLabel = label.new(0, low*0.9995, color = color.new(color.red, 0), text = "Reversal point", style = label.style_label_up)
+
+// Update the position of the labels if the conditions are met
+if silverRedCondition
+    lowestLabel.set_x(bar_index-2)
+    lowestLabel.set_y(low[2])
+if silverBlueCondition
+    highestLabel.set_x(bar_index-2)
+    highestLabel.set_y(high[2])
 
 // Suggested modifications:
 // 1. Try changing the conditions for the background colors and see how it affects the chart

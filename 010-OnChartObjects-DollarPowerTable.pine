@@ -1,0 +1,84 @@
+//@version=5
+// This script creates a table that displays the "Dollar Power" of various currencies
+
+// The "indicator" function sets the title and display settings of the script
+indicator("Dollar Power Table", overlay = true)
+
+// Initialize a boolean variable to check if the table is created
+var tableNotCreated = true
+
+// Create a new table at the top right of the chart with 3 rows and 8 columns
+var tableInfo = table.new(position.top_right, 3, 8, frame_color = color.white, frame_width = 2, border_width = 1, border_color = color.white)
+
+// Calculate the daily RSI for each currency pair
+dailyRSIEURUSD = request.security("FX:EURUSD", "1D", ta.rsi(close, 14)[1])
+dailyRSIGBPUSD = request.security("FX:GBPUSD", "1D", ta.rsi(close, 14)[1])
+dailyRSIUSDCHF = request.security("FX:USDCHF", "1D", ta.rsi(close, 14)[1])
+dailyRSIUSDJPY = request.security("FX:USDJPY", "1D", ta.rsi(close, 14)[1])
+dailyRSIAUDUSD = request.security("FX:AUDUSD", "1D", ta.rsi(close, 14)[1])
+dailyRSINZDUSD = request.security("FX:nzdusd", "1D", ta.rsi(close, 14)[1])
+dailyRSIUSDCAD = request.security("FX:usdcad", "1D", ta.rsi(close, 14)[1])
+
+// If the table is not created, fill the table with the initial data
+if tableNotCreated
+    // The first column of the table will contain the currency names
+    tableInfo.cell(0, 0, "",    text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 1, "EUR", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 2, "GBP", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 3, "CHF", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 4, "JPY", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 5, "AUD", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 6, "NZD", text_size = size.normal, text_color = color.silver)
+    tableInfo.cell(0, 7, "CAD", text_size = size.normal, text_color = color.silver)
+
+    // The second column of the table will contain the "Dollar Power %" of each currency
+    tableInfo.cell(1, 0, "Dollar Power %", text_size = size.normal, text_color = color.silver)
+
+    // The third column of the table will contain the "Situation" of each currency
+    tableInfo.cell(2, 0, "Situation", text_size = size.normal, text_color = color.silver)
+
+    // Set the tableNotCreated variable to false after the table is created
+    tableNotCreated := false
+
+// If it's the last bar on the chart, update the table with the latest data
+if barstate.islast
+    // Calculate the color for each currency based on the RSI value
+    eurColor = (100 - dailyRSIEURUSD)>60? color.rgb(0, 29, 194):(100 - dailyRSIEURUSD)<40? color.rgb(250, 0, 0):color.silver
+    gbpColor = (100 - dailyRSIGBPUSD)>60? color.rgb(0, 29, 194):(100 - dailyRSIGBPUSD)<40? color.rgb(250, 0, 0):color.silver
+    chfColor = (dailyRSIUSDCHF)      >60? color.rgb(0, 29, 194):(dailyRSIUSDCHF)      <40? color.rgb(250, 0, 0):color.silver
+    jpyColor = (dailyRSIUSDJPY)      >60? color.rgb(0, 29, 194):(dailyRSIUSDJPY)      <40? color.rgb(250, 0, 0):color.silver
+    audColor = (100 - dailyRSIAUDUSD)>60? color.rgb(0, 29, 194):(100 - dailyRSIAUDUSD)<40? color.rgb(250, 0, 0):color.silver
+    nzdColor = (100 - dailyRSINZDUSD)>60? color.rgb(0, 29, 194):(100 - dailyRSINZDUSD)<40? color.rgb(250, 0, 0):color.silver
+    cadColor = (dailyRSIUSDCAD)      >60? color.rgb(0, 29, 194):(dailyRSIUSDCAD)      <40? color.rgb(250, 0, 0):color.silver
+
+    // Update the "Dollar Power %" for each currency in the table
+    tableInfo.cell(1, 1, str.tostring(100 - dailyRSIEURUSD, '###.##'), text_size = size.normal, text_color = eurColor)
+    tableInfo.cell(1, 2, str.tostring(100 - dailyRSIGBPUSD, '###.##'), text_size = size.normal, text_color = gbpColor)
+    tableInfo.cell(1, 3, str.tostring(dailyRSIUSDCHF, '###.##'),       text_size = size.normal, text_color = chfColor)
+    tableInfo.cell(1, 4, str.tostring(dailyRSIUSDJPY, '###.##'),       text_size = size.normal, text_color = jpyColor)
+    tableInfo.cell(1, 5, str.tostring(100 - dailyRSIAUDUSD, '###.##'), text_size = size.normal, text_color = audColor)
+    tableInfo.cell(1, 6, str.tostring(100 - dailyRSINZDUSD, '###.##'), text_size = size.normal, text_color = nzdColor)
+    tableInfo.cell(1, 7, str.tostring(dailyRSIUSDCAD, '###.##'),       text_size = size.normal, text_color = cadColor)
+
+    // Define the situation text for each currency based on the RSI value
+    eurusdSituationText = (100 - dailyRSIEURUSD)>60? "EUR is falling":(100 - dailyRSIEURUSD)<40? "EUR is rising":"Near range"
+    gbpusdSituationText = (100 - dailyRSIGBPUSD)>60? "GBP is falling":(100 - dailyRSIGBPUSD)<40? "GBP is rising":"Near range"
+    usdchfSituationText = (dailyRSIUSDCHF)      >60? "CHF is falling":(dailyRSIUSDCHF)      <40? "CHF is rising":"Near range"
+    usdjpySituationText = (dailyRSIUSDJPY)      >60? "JPY is falling":(dailyRSIUSDJPY)      <40? "JPY is rising":"Near range"
+    audusdSituationText = (100 - dailyRSIAUDUSD)>60? "AUD is falling":(100 - dailyRSIAUDUSD)<40? "AUD is rising":"Near range"
+    nzdusdSituationText = (100 - dailyRSINZDUSD)>60? "NZD is falling":(100 - dailyRSINZDUSD)<40? "NZD is rising":"Near range"
+    usdcadSituationText = (dailyRSIUSDCAD)      >60? "CAD is falling":(dailyRSIUSDCAD)      <40? "CAD is rising":"Near range"
+
+    // Update the "Situation" for each currency in the table
+    tableInfo.cell(2, 1, eurusdSituationText, text_size = size.normal, text_color = eurColor)
+    tableInfo.cell(2, 2, gbpusdSituationText, text_size = size.normal, text_color = gbpColor)
+    tableInfo.cell(2, 3, usdchfSituationText, text_size = size.normal, text_color = chfColor)
+    tableInfo.cell(2, 4, usdjpySituationText, text_size = size.normal, text_color = jpyColor)
+    tableInfo.cell(2, 5, audusdSituationText, text_size = size.normal, text_color = audColor)
+    tableInfo.cell(2, 6, nzdusdSituationText, text_size = size.normal, text_color = nzdColor)
+    tableInfo.cell(2, 7, usdcadSituationText, text_size = size.normal, text_color = cadColor)
+
+// Suggested modifications:
+// 1. Try changing the RSI calculation to a different indicator like MACD or Stochastic Oscillator
+// 2. Try adding more currencies to the table
+// 3. Try changing the color scheme of the table
