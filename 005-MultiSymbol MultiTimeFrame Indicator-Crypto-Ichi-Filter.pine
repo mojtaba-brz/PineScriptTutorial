@@ -5,8 +5,9 @@
 indicator("Ichimoku Cross Filter", overlay = true)
 
 input_timeframe = input.timeframe("1D", "TimeFrame")
+input_shift     = input.int(0, "Shift")
 // ====== Symbols List ======
-//     "BINANCE:BTCUSDT" 
+//     "BINANCE:BTCUSDT"
 //     "BINANCE:ETHUSDT"
 //     "BINANCE:NEOUSDT"
 //     "BINANCE:SOLUSDT"
@@ -20,35 +21,35 @@ conditional_text_report(bool condition, string symbol, string event_and_rest_of_
         text_report := symbol + event_and_rest_of_the_text
     text_report
 
-close_btc           = request.security("BINANCE:BTCUSDT", input_timeframe, close)
-tenken_sen_btc      = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(9)))/2
-kijun_sen_btc       = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(26)))/2
+close_btc           = request.security("BINANCE:BTCUSDT", input_timeframe, close)[input_shift]
+tenken_sen_btc      = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(9)))[input_shift]/2
+kijun_sen_btc       = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(26)))[input_shift]/2
 senku_span_a_btc    = (tenken_sen_btc + kijun_sen_btc)[25]/2
-senku_span_b_btc    = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(52)))[25]/2
+senku_span_b_btc    = (request.security("BINANCE:BTCUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:BTCUSDT", input_timeframe, ta.lowest(52)))[25 + input_shift]/2
 
-close_eth           = request.security("BINANCE:ETHUSDT", input_timeframe, close)
-tenken_sen_eth      = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(9)))/2
-kijun_sen_eth       = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(26)))/2
+close_eth           = request.security("BINANCE:ETHUSDT", input_timeframe, close)[input_shift]
+tenken_sen_eth      = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(9)))[input_shift]/2
+kijun_sen_eth       = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(26)))[input_shift]/2
 senku_span_a_eth    = (tenken_sen_eth + kijun_sen_eth)[25]/2
-senku_span_b_eth    = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(52)))[25]/2
+senku_span_b_eth    = (request.security("BINANCE:ETHUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:ETHUSDT", input_timeframe, ta.lowest(52)))[25 + input_shift]/2
 
-close_neo           = request.security("BINANCE:NEOUSDT", input_timeframe, close)
-tenken_sen_neo      = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(9)))/2
-kijun_sen_neo       = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(26)))/2
+close_neo           = request.security("BINANCE:NEOUSDT", input_timeframe, close)[input_shift]
+tenken_sen_neo      = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(9)))[input_shift]/2
+kijun_sen_neo       = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(26)))[input_shift]/2
 senku_span_a_neo    = (tenken_sen_neo + kijun_sen_neo)[25]/2
-senku_span_b_neo    = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(52)))[25]/2
+senku_span_b_neo    = (request.security("BINANCE:NEOUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:NEOUSDT", input_timeframe, ta.lowest(52)))[25 + input_shift]/2
 
-close_sol           = request.security("BINANCE:SOLUSDT", input_timeframe, close)
-tenken_sen_sol      = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(9)))/2
-kijun_sen_sol       = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(26)))/2
+close_sol           = request.security("BINANCE:SOLUSDT", input_timeframe, close)[input_shift]
+tenken_sen_sol      = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(9)))[input_shift]/2
+kijun_sen_sol       = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(26)))[input_shift]/2
 senku_span_a_sol    = (tenken_sen_sol + kijun_sen_sol)[25]/2
-senku_span_b_sol    = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(52)))[25]/2
+senku_span_b_sol    = (request.security("BINANCE:SOLUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:SOLUSDT", input_timeframe, ta.lowest(52)))[25 + input_shift]/2
 
-close_xrp           = request.security("BINANCE:XRPUSDT", input_timeframe, close)
-tenken_sen_xrp      = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(9)))/2
-kijun_sen_xrp       = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(26)))/2
+close_xrp           = request.security("BINANCE:XRPUSDT", input_timeframe, close)[input_shift]
+tenken_sen_xrp      = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(9)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(9)))[input_shift]/2
+kijun_sen_xrp       = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(26)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(26)))[input_shift]/2
 senku_span_a_xrp    = (tenken_sen_xrp + kijun_sen_xrp)[25]/2
-senku_span_b_xrp    = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(52)))[25]/2
+senku_span_b_xrp    = (request.security("BINANCE:XRPUSDT", input_timeframe, ta.highest(52)) + request.security("BINANCE:XRPUSDT", input_timeframe, ta.lowest(52)))[25 + input_shift]/2
 
 if barstate.islast
     report_table.cell(0, 0, "Report [TF:" + input_timeframe + "]", text_color = color.white, text_size = size.large)
@@ -99,4 +100,4 @@ if barstate.islast
     report_text += conditional_text_report(close_xrp < senku_span_a_xrp and close_xrp < senku_span_b_xrp and
      (close_xrp >= senku_span_a_xrp or close_xrp >= senku_span_b_xrp), "BINANCE:XRPUSDT" , " : Ichimoku Cloud broke-down\n")
      
-    report_table.cell(0, 1, report_text , text_color = color.white)
+    report_table.cell(0, 1, report_text , text_color = color.white, text_halign = text.align_left)
