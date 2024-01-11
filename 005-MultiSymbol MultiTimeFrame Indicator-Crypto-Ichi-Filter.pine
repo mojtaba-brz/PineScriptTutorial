@@ -28,109 +28,40 @@ conditional_text_report(bool condition, string symbol, string event_and_rest_of_
         text_report := symbol + event_and_rest_of_the_text
     text_report
 
-close_btc           = request.security("BINANCE:BTCUSDT", input_timeframe, close[input_shift])
-tenken_sen_btc      = request.security("BINANCE:BTCUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9))[input_shift])/2
-kijun_sen_btc       = request.security("BINANCE:BTCUSDT", input_timeframe, (ta.highest(26) + ta.lowest(26))[input_shift])/2
-senku_span_a_btc    = request.security("BINANCE:BTCUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + input_shift])/2
-senku_span_b_btc    = request.security("BINANCE:BTCUSDT", input_timeframe, (ta.highest(52) + ta.lowest(52))[25 + input_shift])/2
-pre_close_btc           = close_btc[pre_index]
-pre_tenken_sen_btc      = tenken_sen_btc[pre_index]
-pre_kijun_sen_btc       = kijun_sen_btc[pre_index]
-pre_senku_span_a_btc    = senku_span_a_btc[pre_index]
-pre_senku_span_b_btc    = senku_span_b_btc[pre_index]
+prepare_filter_parameters(const string sym, string tf, int shift) =>
+    _close          = request.security(sym, tf, close[shift])
+    tenken_sen      = request.security(sym, tf, (ta.highest(9) + ta.lowest(9))[shift])/2
+    kijun_sen       = request.security(sym, tf, (ta.highest(26) + ta.lowest(26))[shift])/2
+    senku_span_a    = request.security(sym, tf, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + shift])/2
+    senku_span_b    = request.security(sym, tf, (ta.highest(52) + ta.lowest(52))[25 + shift])/2
+    [_close, tenken_sen, kijun_sen, senku_span_a, senku_span_b]
 
-close_eth           = request.security("BINANCE:ETHUSDT", input_timeframe, close[input_shift])
-tenken_sen_eth      = request.security("BINANCE:ETHUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9))[input_shift])/2
-kijun_sen_eth       = request.security("BINANCE:ETHUSDT", input_timeframe, (ta.highest(26) + ta.lowest(26))[input_shift])/2
-senku_span_a_eth    = request.security("BINANCE:ETHUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + input_shift])/2
-senku_span_b_eth    = request.security("BINANCE:ETHUSDT", input_timeframe, (ta.highest(52) + ta.lowest(52))[25 + input_shift])/2
-pre_close_eth           = close_eth[pre_index]
-pre_tenken_sen_eth      = tenken_sen_eth[pre_index]
-pre_kijun_sen_eth       = kijun_sen_eth[pre_index]   
-pre_senku_span_a_eth    = senku_span_a_eth[pre_index]
-pre_senku_span_b_eth    = senku_span_b_eth[pre_index]
+generate_filter_report(string symbol, float _close, float tenken_sen, float kijun_sen, float senku_span_a, float senku_span_b) =>
+    filter_report = ""
+    filter_report += conditional_text_report(_close > tenken_sen and _close[1] <= tenken_sen[1], "BINANCE:BTCUSDT" , " : Tenken-sen crossover\n")
+    filter_report += conditional_text_report(_close < tenken_sen and _close[1] >= tenken_sen[1], "BINANCE:BTCUSDT" , " : Tenken-sen crossunder\n")
+    filter_report += conditional_text_report(_close > kijun_sen and _close[1] <= kijun_sen[1], "BINANCE:BTCUSDT" , " : Kijun-sen crossover\n")
+    filter_report += conditional_text_report(_close < kijun_sen and _close[1] >= kijun_sen[1], "BINANCE:BTCUSDT" , " : Kijun-sen crossunder\n")
+    filter_report += conditional_text_report(_close > senku_span_a and _close > senku_span_b and
+     (_close[1] <= senku_span_a[1] or _close[1] <= senku_span_b[1]), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-up\n")
+    filter_report += conditional_text_report(_close < senku_span_a and _close < senku_span_b and
+     (_close[1] >= senku_span_a[1] or close[1] >= senku_span_b[1]), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-down\n")
+    filter_report
 
-close_neo           = request.security("BINANCE:NEOUSDT", input_timeframe, close[input_shift])
-tenken_sen_neo      = request.security("BINANCE:NEOUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9))[input_shift])/2
-kijun_sen_neo       = request.security("BINANCE:NEOUSDT", input_timeframe, (ta.highest(26) + ta.lowest(26))[input_shift])/2
-senku_span_a_neo    = request.security("BINANCE:NEOUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + input_shift])/2
-senku_span_b_neo    = request.security("BINANCE:NEOUSDT", input_timeframe, (ta.highest(52) + ta.lowest(52))[25 + input_shift])/2
-pre_close_neo           = close_neo[pre_index]       
-pre_tenken_sen_neo      = tenken_sen_neo[pre_index]  
-pre_kijun_sen_neo       = kijun_sen_neo[pre_index]   
-pre_senku_span_a_neo    = senku_span_a_neo[pre_index]
-pre_senku_span_b_neo    = senku_span_b_neo[pre_index]
+[close_btc, tenken_sen_btc, kijun_sen_btc, senku_span_a_btc, senku_span_b_btc] = prepare_filter_parameters("BINANCE:BTCUSDT", input_timeframe, input_shift)
+[close_eth, tenken_sen_eth, kijun_sen_eth, senku_span_a_eth, senku_span_b_eth] = prepare_filter_parameters("BINANCE:ETHUSDT", input_timeframe, input_shift)
+[close_neo, tenken_sen_neo, kijun_sen_neo, senku_span_a_neo, senku_span_b_neo] = prepare_filter_parameters("BINANCE:NEOUSDT", input_timeframe, input_shift)
+[close_sol, tenken_sen_sol, kijun_sen_sol, senku_span_a_sol, senku_span_b_sol] = prepare_filter_parameters("BINANCE:SOLUSDT", input_timeframe, input_shift)
+[close_xrp, tenken_sen_xrp, kijun_sen_xrp, senku_span_a_xrp, senku_span_b_xrp] = prepare_filter_parameters("BINANCE:XRPUSDT", input_timeframe, input_shift)
 
-close_sol           = request.security("BINANCE:SOLUSDT", input_timeframe, close[input_shift])
-tenken_sen_sol      = request.security("BINANCE:SOLUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9))[input_shift])/2
-kijun_sen_sol       = request.security("BINANCE:SOLUSDT", input_timeframe, (ta.highest(26) + ta.lowest(26))[input_shift])/2
-senku_span_a_sol    = request.security("BINANCE:SOLUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + input_shift])/2
-senku_span_b_sol    = request.security("BINANCE:SOLUSDT", input_timeframe, (ta.highest(52) + ta.lowest(52))[25 + input_shift])/2
-pre_close_sol           = close_sol[pre_index]       
-pre_tenken_sen_sol      = tenken_sen_sol[pre_index]  
-pre_kijun_sen_sol       = kijun_sen_sol[pre_index]   
-pre_senku_span_a_sol    = senku_span_a_sol[pre_index]
-pre_senku_span_b_sol    = senku_span_b_sol[pre_index]
-
-close_xrp           = request.security("BINANCE:XRPUSDT", input_timeframe, close[input_shift])
-tenken_sen_xrp      = request.security("BINANCE:XRPUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9))[input_shift])/2
-kijun_sen_xrp       = request.security("BINANCE:XRPUSDT", input_timeframe, (ta.highest(26) + ta.lowest(26))[input_shift])/2
-senku_span_a_xrp    = request.security("BINANCE:XRPUSDT", input_timeframe, (ta.highest(9) + ta.lowest(9) + ta.highest(26) + ta.lowest(26))[25 + input_shift])/2
-senku_span_b_xrp    = request.security("BINANCE:XRPUSDT", input_timeframe, (ta.highest(52) + ta.lowest(52))[25 + input_shift])/2
-pre_close_xrp           = close_xrp[pre_index]
-pre_tenken_sen_xrp      = tenken_sen_xrp[pre_index]  
-pre_kijun_sen_xrp       = kijun_sen_xrp[pre_index]   
-pre_senku_span_a_xrp    = senku_span_a_xrp[pre_index]
-pre_senku_span_b_xrp    = senku_span_b_xrp[pre_index]
+report_text = ""
+report_text += generate_filter_report("BINANCE:BTCUSDT", close_btc, tenken_sen_btc, kijun_sen_btc, senku_span_a_btc, senku_span_b_btc)
+report_text += generate_filter_report("BINANCE:ETHUSDT", close_eth, tenken_sen_eth, kijun_sen_eth, senku_span_a_eth, senku_span_b_eth)
+report_text += generate_filter_report("BINANCE:NEOUSDT", close_neo, tenken_sen_neo, kijun_sen_neo, senku_span_a_neo, senku_span_b_neo)
+report_text += generate_filter_report("BINANCE:SOLUSDT", close_sol, tenken_sen_sol, kijun_sen_sol, senku_span_a_sol, senku_span_b_sol)
+report_text += generate_filter_report("BINANCE:XRPUSDT", close_xrp, tenken_sen_xrp, kijun_sen_xrp, senku_span_a_xrp, senku_span_b_xrp)
 
 if barstate.islast
     report_table.cell(0, 0, "Report [TF:" + input_timeframe + "]", text_color = color.white, text_size = size.large)
     report_table.cell(0, 1, tf_warnning_massage, text_color = color.red, text_halign = text.align_left)
-    report_text = ""
-
-    report_text += conditional_text_report(close_btc > tenken_sen_btc and pre_close_btc <= pre_tenken_sen_btc, "BINANCE:BTCUSDT" , " : Tenken-sen crossover\n")
-    report_text += conditional_text_report(close_btc < tenken_sen_btc and pre_close_btc >= pre_tenken_sen_btc, "BINANCE:BTCUSDT" , " : Tenken-sen crossunder\n")
-    report_text += conditional_text_report(close_btc > kijun_sen_btc and pre_close_btc <= pre_kijun_sen_btc, "BINANCE:BTCUSDT" , " : Kijun-sen crossover\n")
-    report_text += conditional_text_report(close_btc < kijun_sen_btc and pre_close_btc >= pre_kijun_sen_btc, "BINANCE:BTCUSDT" , " : Kijun-sen crossunder\n")
-    report_text += conditional_text_report(close_btc > senku_span_a_btc and close_btc > senku_span_b_btc and
-     (pre_close_btc <= pre_senku_span_a_btc or pre_close_btc <= pre_senku_span_b_btc), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-up\n")
-    report_text += conditional_text_report(close_btc < senku_span_a_btc and close_btc < senku_span_b_btc and
-     (pre_close_btc >= pre_senku_span_a_btc or pre_close_btc >= pre_senku_span_b_btc), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-down\n")
-
-    report_text += conditional_text_report(close_eth > tenken_sen_eth and pre_close_eth <= pre_tenken_sen_eth, "BINANCE:ETHUSDT" , " : Tenken-sen crossover\n")
-    report_text += conditional_text_report(close_eth < tenken_sen_eth and pre_close_eth >= pre_tenken_sen_eth, "BINANCE:ETHUSDT" , " : Tenken-sen crossunder\n")
-    report_text += conditional_text_report(close_eth > kijun_sen_eth and pre_close_eth <= pre_kijun_sen_eth, "BINANCE:ETHUSDT" , " : Kijun-sen crossover\n")
-    report_text += conditional_text_report(close_eth < kijun_sen_eth and pre_close_eth >= pre_kijun_sen_eth, "BINANCE:ETHUSDT" , " : Kijun-sen crossunder\n")
-    report_text += conditional_text_report(close_eth > senku_span_a_eth and close_eth > senku_span_b_eth and
-     (pre_close_eth <= pre_senku_span_a_eth or pre_close_eth <= pre_senku_span_b_eth), "BINANCE:ETHUSDT" , " : Ichimoku Cloud broke-up\n")
-    report_text += conditional_text_report(close_eth < senku_span_a_eth and close_eth < senku_span_b_eth and
-     (pre_close_eth >= pre_senku_span_a_eth or pre_close_eth >= pre_senku_span_b_eth), "BINANCE:ETHUSDT" , " : Ichimoku Cloud broke-down\n")
-
-    report_text += conditional_text_report(close_neo > tenken_sen_neo and pre_close_neo <= pre_tenken_sen_neo, "BINANCE:NEOUSDT" , " : Tenken-sen crossover\n")
-    report_text += conditional_text_report(close_neo < tenken_sen_neo and pre_close_neo >= pre_tenken_sen_neo, "BINANCE:NEOUSDT" , " : Tenken-sen crossunder\n")
-    report_text += conditional_text_report(close_neo > kijun_sen_neo and pre_close_neo <= pre_kijun_sen_neo, "BINANCE:NEOUSDT" , " : Kijun-sen crossover\n")
-    report_text += conditional_text_report(close_neo < kijun_sen_neo and pre_close_neo >= pre_kijun_sen_neo, "BINANCE:NEOUSDT" , " : Kijun-sen crossunder\n")
-    report_text += conditional_text_report(close_neo > senku_span_a_neo and close_neo > senku_span_b_neo and
-     (pre_close_neo <= pre_senku_span_a_neo or pre_close_neo <= pre_senku_span_b_neo), "BINANCE:NEOUSDT" , " : Ichimoku Cloud broke-up\n")
-    report_text += conditional_text_report(close_neo < senku_span_a_neo and close_neo < senku_span_b_neo and
-     (pre_close_neo >= pre_senku_span_a_neo or pre_close_neo >= pre_senku_span_b_neo), "BINANCE:NEOUSDT" , " : Ichimoku Cloud broke-down\n")
-
-    report_text += conditional_text_report(close_sol > tenken_sen_sol and pre_close_sol <= pre_tenken_sen_sol, "BINANCE:SOLUSDT" , " : Tenken-sen crossover\n")
-    report_text += conditional_text_report(close_sol < tenken_sen_sol and pre_close_sol >= pre_tenken_sen_sol, "BINANCE:SOLUSDT" , " : Tenken-sen crossunder\n")
-    report_text += conditional_text_report(close_sol > kijun_sen_sol and pre_close_sol <= pre_kijun_sen_sol, "BINANCE:SOLUSDT" , " : Kijun-sen crossover\n")
-    report_text += conditional_text_report(close_sol < kijun_sen_sol and pre_close_sol >= pre_kijun_sen_sol, "BINANCE:SOLUSDT" , " : Kijun-sen crossunder\n")
-    report_text += conditional_text_report(close_sol > senku_span_a_sol and close_sol > senku_span_b_sol and
-     (pre_close_sol <= pre_senku_span_a_sol or pre_close_sol <= pre_senku_span_b_sol), "BINANCE:SOLUSDT" , " : Ichimoku Cloud broke-up\n")
-    report_text += conditional_text_report(close_sol < senku_span_a_sol and close_sol < senku_span_b_sol and
-     (pre_close_sol >= pre_senku_span_a_sol or pre_close_sol >= pre_senku_span_b_sol), "BINANCE:SOLUSDT" , " : Ichimoku Cloud broke-down\n")
-
-    report_text += conditional_text_report(close_sol > tenken_sen_xrp and pre_close_xrp <= pre_tenken_sen_xrp, "BINANCE:XRPUSDT" , " : Tenken-sen crossover\n")
-    report_text += conditional_text_report(close_xrp < tenken_sen_xrp and pre_close_xrp >= pre_tenken_sen_xrp, "BINANCE:XRPUSDT" , " : Tenken-sen crossunder\n")
-    report_text += conditional_text_report(close_xrp > kijun_sen_xrp and pre_close_xrp <= pre_kijun_sen_xrp, "BINANCE:XRPUSDT" , " : Kijun-sen crossover\n")
-    report_text += conditional_text_report(close_xrp < kijun_sen_xrp and pre_close_xrp >= pre_kijun_sen_xrp, "BINANCE:XRPUSDT" , " : Kijun-sen crossunder\n")
-    report_text += conditional_text_report(close_xrp > senku_span_a_xrp and close_xrp > senku_span_b_xrp and
-     (pre_close_xrp <= pre_senku_span_a_xrp or pre_close_xrp <= pre_senku_span_b_xrp), "BINANCE:XRPUSDT" , " : Ichimoku Cloud broke-up\n")
-    report_text += conditional_text_report(close_xrp < senku_span_a_xrp and close_xrp < senku_span_b_xrp and
-     (pre_close_xrp >= pre_senku_span_a_xrp or pre_close_xrp >= pre_senku_span_b_xrp), "BINANCE:XRPUSDT" , " : Ichimoku Cloud broke-down\n")
-     
     report_table.cell(0, 2, report_text , text_color = color.white, text_halign = text.align_left)
