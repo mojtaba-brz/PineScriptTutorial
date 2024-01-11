@@ -11,6 +11,7 @@ Each file in this repository contains well-commented code examples that demonstr
 5. [MultiSymbol MultiTimeFrame Indicator](005-MultiSymbol%20MultiTimeFrame%20Indicator%20.pine)
     * [MARainbow](005-MultiSymbol%20MultiTimeFrame%20Indicator-MARainbow.pine)
     * [Crypto-Ichi-Filter](005-MultiSymbol%20MultiTimeFrame%20Indicator-Crypto-Ichi-Filter.pine)
+    * [Crypto-Ichi-Filter (with a bug in timeframe - *just for test*)](005-MultiSymbol%20MultiTimeFrame%20Indicator-Crypto-Ichi-Filter(with%20alot%20of%20bugs%20in%20handling%20the%20timeframe).pine)
     * [See here for more ticker ids](https://www.tradingcode.net/tradingview/instrument-ticker-id/#syminfotickerid-for-various-instruments)
 6. [Alert](006-Alert.pine)
 7. [Strategy](007-Strategy.pine)
