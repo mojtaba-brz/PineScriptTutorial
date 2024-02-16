@@ -38,14 +38,14 @@ prepare_filter_parameters(const string sym, string tf, int shift) =>
 
 generate_filter_report(string symbol, float _close, float tenken_sen, float kijun_sen, float senku_span_a, float senku_span_b) =>
     filter_report = ""
-    filter_report += conditional_text_report(_close > tenken_sen and _close[1] <= tenken_sen[1], "BINANCE:BTCUSDT" , " : Tenken-sen crossover\n")
-    filter_report += conditional_text_report(_close < tenken_sen and _close[1] >= tenken_sen[1], "BINANCE:BTCUSDT" , " : Tenken-sen crossunder\n")
-    filter_report += conditional_text_report(_close > kijun_sen and _close[1] <= kijun_sen[1], "BINANCE:BTCUSDT" , " : Kijun-sen crossover\n")
-    filter_report += conditional_text_report(_close < kijun_sen and _close[1] >= kijun_sen[1], "BINANCE:BTCUSDT" , " : Kijun-sen crossunder\n")
+    filter_report += conditional_text_report(_close > tenken_sen and _close[1] <= tenken_sen[1], symbol , " : Tenken-sen crossover\n")
+    filter_report += conditional_text_report(_close < tenken_sen and _close[1] >= tenken_sen[1], symbol , " : Tenken-sen crossunder\n")
+    filter_report += conditional_text_report(_close > kijun_sen and _close[1] <= kijun_sen[1], symbol , " : Kijun-sen crossover\n")
+    filter_report += conditional_text_report(_close < kijun_sen and _close[1] >= kijun_sen[1], symbol , " : Kijun-sen crossunder\n")
     filter_report += conditional_text_report(_close > senku_span_a and _close > senku_span_b and
-     (_close[1] <= senku_span_a[1] or _close[1] <= senku_span_b[1]), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-up\n")
+     (_close[1] <= senku_span_a[1] or _close[1] <= senku_span_b[1]), symbol , " : Ichimoku Cloud broke-up\n")
     filter_report += conditional_text_report(_close < senku_span_a and _close < senku_span_b and
-     (_close[1] >= senku_span_a[1] or close[1] >= senku_span_b[1]), "BINANCE:BTCUSDT" , " : Ichimoku Cloud broke-down\n")
+     (_close[1] >= senku_span_a[1] or close[1] >= senku_span_b[1]), symbol , " : Ichimoku Cloud broke-down\n")
     filter_report
 
 [close_btc, tenken_sen_btc, kijun_sen_btc, senku_span_a_btc, senku_span_b_btc] = prepare_filter_parameters("BINANCE:BTCUSDT", input_timeframe, input_shift)
@@ -55,6 +55,7 @@ generate_filter_report(string symbol, float _close, float tenken_sen, float kiju
 [close_xrp, tenken_sen_xrp, kijun_sen_xrp, senku_span_a_xrp, senku_span_b_xrp] = prepare_filter_parameters("BINANCE:XRPUSDT", input_timeframe, input_shift)
 
 report_text = ""
+report_text := ""
 report_text += generate_filter_report("BINANCE:BTCUSDT", close_btc, tenken_sen_btc, kijun_sen_btc, senku_span_a_btc, senku_span_b_btc)
 report_text += generate_filter_report("BINANCE:ETHUSDT", close_eth, tenken_sen_eth, kijun_sen_eth, senku_span_a_eth, senku_span_b_eth)
 report_text += generate_filter_report("BINANCE:NEOUSDT", close_neo, tenken_sen_neo, kijun_sen_neo, senku_span_a_neo, senku_span_b_neo)
@@ -62,6 +63,6 @@ report_text += generate_filter_report("BINANCE:SOLUSDT", close_sol, tenken_sen_s
 report_text += generate_filter_report("BINANCE:XRPUSDT", close_xrp, tenken_sen_xrp, kijun_sen_xrp, senku_span_a_xrp, senku_span_b_xrp)
 
 if barstate.islast
-    report_table.cell(0, 0, "Report [TF:" + input_timeframe + "]", text_color = color.white, text_size = size.large)
+    report_table.cell(0, 0, "Report [Timeframe:" + input_timeframe + "]", text_color = color.white, text_size = size.large)
     report_table.cell(0, 1, tf_warnning_massage, text_color = color.red, text_halign = text.align_left)
     report_table.cell(0, 2, report_text , text_color = color.white, text_halign = text.align_left)
